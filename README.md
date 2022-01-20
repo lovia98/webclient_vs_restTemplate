@@ -4,7 +4,7 @@
 
 https://github.com/lovia98/webclient_vs_restTemplate/blob/main/src/main/java/com/example/reactive/sample/WebController.java
 
-##2초가 걸리는 API를 restTemplate 과 webclient 논블럭킹을 이용해 호출하는 결과 차이 테스트
+## 2초가 걸리는 API를 restTemplate 과 webclient 논블럭킹을 이용해 호출하는 결과 차이 테스트
 ```
     /**
      * restTemplate 으로 호출 (blocking)
