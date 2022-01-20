@@ -4,7 +4,7 @@
 
 https://github.com/lovia98/webclient_vs_restTemplate/blob/main/src/main/java/com/example/reactive/sample/WebController.java
 
-##code
+##2초가 걸리는 API를 restTemplate 과 webclient 논블럭킹을 이용해 호출하는 결과 차이 테스트
 ```
     /**
      * restTemplate 으로 호출 (blocking)
@@ -32,6 +32,18 @@ https://github.com/lovia98/webclient_vs_restTemplate/blob/main/src/main/java/com
     }
 ```
 
+### 결과
+```
+INFO 96276 --- [ctor-http-nio-2] c.example.reactive.sample.WebController  : 블럭킹 호출 시작
+INFO 96276 --- [ctor-http-nio-2] c.example.reactive.sample.WebController  : com.example.reactive.sample.Tweet@61a4ac68
+INFO 96276 --- [ctor-http-nio-2] c.example.reactive.sample.WebController  : com.example.reactive.sample.Tweet@7bd791ac
+INFO 96276 --- [ctor-http-nio-2] c.example.reactive.sample.WebController  : com.example.reactive.sample.Tweet@5f7a8bec
+INFO 96276 --- [ctor-http-nio-2] c.example.reactive.sample.WebController  : 블럭킹 호출 완료 - 걸린시간 : 2072ms
+
+```
+
+
+
 ```
     /**
      * webclient 호출 (non-blockin)
@@ -54,4 +66,10 @@ https://github.com/lovia98/webclient_vs_restTemplate/blob/main/src/main/java/com
         log.info("none-블럭킹 호출 완료 - 걸린시간 : {}ms", System.currentTimeMillis() - start);
         return tweetFlux;
     }
+```
+
+### 결과
+```
+INFO 96276 --- [ctor-http-nio-2] c.example.reactive.sample.WebController  : none-블럭킹 호출 시작
+INFO 96276 --- [ctor-http-nio-2] c.example.reactive.sample.WebController  : none-블럭킹 호출 완료 - 걸린시간 : 172ms
 ```
