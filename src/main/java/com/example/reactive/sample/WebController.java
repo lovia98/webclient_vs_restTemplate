@@ -6,6 +6,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StopWatch;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
@@ -32,7 +33,8 @@ public class WebController {
     public List<Tweet> getTweetsBlocking() {
 
         log.info("블럭킹 호출 시작");
-        long start = System.currentTimeMillis();
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
 
         final String uri = getSlowServiceUri();
 
@@ -44,7 +46,8 @@ public class WebController {
         List<Tweet> result = response.getBody();
         result.forEach(tweet -> log.info(tweet.toString()));
 
-        log.info("블럭킹 호출 완료 - 걸린시간 : {}ms", System.currentTimeMillis() - start);
+        stopWatch.stop();
+        log.info("블럭킹 호출 완료 - 걸린시간 : {}ms", stopWatch.getTotalTimeMillis());
         return result;
     }
 
@@ -57,7 +60,9 @@ public class WebController {
     public Flux<Tweet> getTweetsNonBlocking() {
 
         log.info("none-블럭킹 호출 시작");
-        long start = System.currentTimeMillis();
+
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
 
         Flux<Tweet> tweetFlux = WebClient.create()
                 .get()
@@ -65,8 +70,18 @@ public class WebController {
                 .retrieve()
                 .bodyToFlux(Tweet.class);
 
-        tweetFlux.subscribe(tweet -> log.info(tweet.toString()));
-        log.info("none-블럭킹 호출 완료 - 걸린시간 : {}ms", System.currentTimeMillis() - start);
+        tweetFlux.subscribe(tweet -> {
+            if (stopWatch.isRunning()) {
+                stopWatch.stop();
+            }
+            log.info(tweet.toString());
+            log.info("비동기 응답시간 {}", stopWatch.getTotalTimeMillis());
+        });
+
+        stopWatch.stop();
+        log.info("논블럭 페이지 응답시간 {}", stopWatch.getTotalTimeMillis());
+        stopWatch.start();
+
         return tweetFlux;
     }
 
